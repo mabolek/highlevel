@@ -7,7 +7,6 @@ namespace Mabolek\Highlevel\FormEngine\FieldControl;
 
 
 use Mabolek\Highlevel\Instruction\FieldButton\FieldButtonInstruction;
-use Mabolek\Highlevel\Instruction\FieldButton\FieldButtonInstructionInterface;
 use Mabolek\Highlevel\Instruction\InstructionProvider;
 use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;

@@ -9,6 +9,7 @@ namespace Mabolek\Highlevel\FormEngine\FieldControl;
 use Mabolek\Highlevel\Instruction\FieldButton\FieldButtonInstruction;
 use Mabolek\Highlevel\Instruction\InstructionProvider;
 use TYPO3\CMS\Backend\Form\AbstractNode;
+use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -20,8 +21,10 @@ class FieldButtonControl extends AbstractNode
         $instruction = GeneralUtility::makeInstance(InstructionProvider::class)
             ->getByIdentifier($this->data["renderType"]);
 
+        $icon = $instruction->getIcon();
+
         return [
-            'iconIdentifier' => $instruction->getIcon(),
+            'iconIdentifier' => $icon instanceof Icon ? $icon->getIdentifier() : $icon,
             'title' => $instruction->getLabel(),
             'linkAttributes' => [
                 'class' => 'highLevelFieldButton ',

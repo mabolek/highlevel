@@ -7,6 +7,4 @@ namespace Mabolek\Highlevel\Instruction;
 
 
 interface InstructionInterface
-{
-
-}
+{}

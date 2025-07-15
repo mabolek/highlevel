@@ -13,10 +13,10 @@ final class FieldButtonInstruction implements InstructionInterface
         protected string $identifier,
         protected string|\Closure $label,
         protected string|Icon $icon,
-        protected string|\Closure $table,
-        protected string|\Closure $sourceField,
-        protected string|null $targetField,
-        protected string|\Closure $callback,
+        protected string|array|\Closure $table,
+        protected string|array|\Closure $sourceField,
+        protected string|array|null $targetField,
+        protected string|self|\Closure $callback,
     ) {}
 
     public function __invoke(string $value): string
@@ -27,7 +27,7 @@ final class FieldButtonInstruction implements InstructionInterface
             $callback = new $callback();
         }
 
-        return ($callback)($value, $this);
+        return ($callback->bindTo($this))($value);
     }
 
     public function getIcon(): Icon|string
@@ -42,21 +42,22 @@ final class FieldButtonInstruction implements InstructionInterface
 
     public function getLabel(): \Closure|string
     {
-        return $this->label;
+        return $this->label instanceof \Closure ? $this->label->bindTo($this) : $this->label;
     }
 
-    public function getSourceField(): \Closure|string
+    public function getSourceField(): \Closure|array|string
     {
-        return $this->sourceField;
+        return $this->sourceField instanceof \Closure ? $this->sourceField->bindTo($this) : $this->sourceField;
     }
 
-    public function getTable(): \Closure|string
+    public function getTable(): \Closure|array|string
     {
-        return $this->table;
+        return $this->table instanceof \Closure ? $this->table->bindTo($this) : $this->table;
     }
 
-    public function getTargetField(): ?string
+    public function getTargetField(): \Closure|array|string
     {
-        return $this->targetField;
+        return $this->targetField instanceof \Closure ? $this->targetField->bindTo($this) : $this->targetField
+            ?? $this->getTable();
     }
 }

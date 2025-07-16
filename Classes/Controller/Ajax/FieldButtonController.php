@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mabolek\Highlevel\Controller\Ajax;
 
 use Mabolek\Highlevel\Instruction\InstructionProvider;
+use Mabolek\Highlevel\Instruction\InstructionRuntimeErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -36,13 +37,20 @@ class FieldButtonController
         $instruction = GeneralUtility::makeInstance(InstructionProvider::class)
             ->getByIdentifier($requestData['identifier']);
 
-        $value = ($instruction)($requestData['value']);
+        $value = null;
+        $error = null;
+
+        try {
+            $value = ($instruction)($requestData['value']);
+        } catch (InstructionRuntimeErrorException $e) {
+            $error = $e->getMessage();
+        }
 
         return new JsonResponse(
             [
-                'success' => true,//$response->getStatusCode() < 300,
-                'value' => $value,
-                'error' => implode(' ', ArrayUtility::flatten($data['errors'] ?? [])),
+                'success' => $error === null,
+                'value' => $value ?? '',
+                'error' => $error ?? '',
             ],
             200
         );

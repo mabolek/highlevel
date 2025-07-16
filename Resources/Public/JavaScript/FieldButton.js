@@ -45,7 +45,7 @@ console.log(params);
 			if (!data.success) {
 				Notification.error(
 					'Action Error',
-					'The action returned an error. ' + data.error
+					data.error
 				);
 
 				return;

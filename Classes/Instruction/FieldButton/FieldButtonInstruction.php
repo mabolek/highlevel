@@ -58,6 +58,6 @@ final class FieldButtonInstruction implements InstructionInterface
     public function getTargetField(): \Closure|array|string
     {
         return $this->targetField instanceof \Closure ? $this->targetField->bindTo($this) : $this->targetField
-            ?? $this->getTable();
+            ?? $this->getSourceField();
     }
 }

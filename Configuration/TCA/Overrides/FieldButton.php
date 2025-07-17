@@ -72,8 +72,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
             }
 
             foreach ($fields as $field) {
+                if (!isset($GLOBALS['TCA'][$table]['columns'][$field])) {
+                    continue;
+                }
+
                 $GLOBALS['TCA'][$table]['columns'][$field]['config']['fieldControl'][
-                $instanceWithFixedTable->getIdentifier()
+                    $instanceWithFixedTable->getIdentifier()
                 ] = [
                     'renderType' => $instanceWithFixedTable->getIdentifier(),
                 ];

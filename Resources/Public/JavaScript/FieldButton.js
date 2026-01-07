@@ -2,7 +2,7 @@ import RegularEvent from '@typo3/core/event/regular-event.js';
 import AjaxRequest from '@typo3/core/ajax/ajax-request.js';
 import Notification from '@typo3/backend/notification.js';
 
-for (const fieldButtonElement of document.querySelectorAll('.highLevelFieldButton').values()) {
+for (const fieldButtonElement of document.querySelectorAll('.highlevelFieldButton').values()) {
   new RegularEvent('click', function (e) {
     const self = this;
 
@@ -25,7 +25,7 @@ for (const fieldButtonElement of document.querySelectorAll('.highLevelFieldButto
       outputName: self.getAttribute('data-formengine-output-name')
     };
     console.log(params);
-    new AjaxRequest(TYPO3.settings.ajaxUrls.highlevel_fieldbutton)
+    new AjaxRequest(TYPO3.settings.ajaxUrls['highlevel_' + params.identifier])
       .post(params, {
         headers: {
           'Content-Type': 'application/json; charset=utf-8'
@@ -41,19 +41,19 @@ for (const fieldButtonElement of document.querySelectorAll('.highLevelFieldButto
           return;
         }
 
-        const data = await result.resolve();
+        const response = await result.resolve();
 
-        if (!data.success) {
+        if (!response.success) {
           Notification.error(
             'Action Error',
-            data.error
+            response.error
           );
 
           return;
         }
 
-        document.querySelector('input[name="data' + self.getAttribute('data-formengine-output-name') + '"]').value = data.value;
-        document.querySelector('input[data-formengine-input-name="data' + self.getAttribute('data-formengine-output-name') + '"]').value = data.value;
+        document.querySelector('input[name="data' + self.getAttribute('data-formengine-output-name') + '"]').value = response.data.value;
+        document.querySelector('input[data-formengine-input-name="data' + self.getAttribute('data-formengine-output-name') + '"]').value = response.data.value;
       }, function (error) {
         Notification.error(
           'Request Failed',

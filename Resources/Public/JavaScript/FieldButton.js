@@ -17,12 +17,19 @@ for (const fieldButtonElement of document.querySelectorAll('.highlevelFieldButto
         return obj;
       }, {});
 
+    let sourceName = self.getAttribute('data-highlevel-source-name');
+
+    let value = filtered['data' + sourceName];
+
+    if (sourceName.endsWith('[uid]')) {
+      value = sourceName.split('][')[1];
+    }
+
     const params = {
-      fields: filtered,
-      value: filtered['data' + self.getAttribute('data-formengine-input-name')],
+      value: value,
       identifier: self.getAttribute('data-highlevel-identifier'),
-      inputName: self.getAttribute('data-formengine-input-name'),
-      outputName: self.getAttribute('data-formengine-output-name')
+      sourceName: sourceName,
+      targetName: self.getAttribute('data-highlevel-target-name')
     };
     console.log(params);
     new AjaxRequest(TYPO3.settings.ajaxUrls['highlevel_' + params.identifier])
@@ -52,8 +59,8 @@ for (const fieldButtonElement of document.querySelectorAll('.highlevelFieldButto
           return;
         }
 
-        document.querySelector('input[name="data' + self.getAttribute('data-formengine-output-name') + '"]').value = response.data.value;
-        document.querySelector('input[data-formengine-input-name="data' + self.getAttribute('data-formengine-output-name') + '"]').value = response.data.value;
+        document.querySelector('input[name="data' + self.getAttribute('data-highlevel-target-name') + '"]').value = response.data.value;
+        document.querySelector('input[data-formengine-input-name="data' + self.getAttribute('data-highlevel-target-name') + '"]').value = response.data.value;
       }, function (error) {
         Notification.error(
           'Request Failed',

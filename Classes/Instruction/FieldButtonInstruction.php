@@ -23,25 +23,35 @@ final class FieldButtonInstruction extends AbstractInstruction implements ExtLoc
     private ?string $iconIdentifier = null;
 
     /**
-     * @param string|callable-string|\Closure():string|GenericToStringCallback $label The title for the button.
-     * @param string|callable-string|\Closure():string|GenericToStringCallback $icon Path to the icon file or icon identifier for the icon shown on the button.
+     * @param string|\Closure|GenericToStringCallback $label The title for the button.
+     * @param string|\Closure|GenericToStringCallback $icon Path to the icon file or icon identifier for the icon shown on the button.
      * @param string|array|callable-string|\Closure():string[]|GenericToArrayOfStringsCallback $table Table(s) to apply the button to.
      * @param string|array|callable-string|\Closure():string[]|GenericToArrayOfStringsCallback $sourceField The field to pick the value from.
+     * @param string|array|\Closure|GenericStringToStringCallback $callback The callback function. Processes the supplied input value.
      * @param string|array|callable-string|\Closure():string[]|GenericToArrayOfStringsCallback|null $targetField Optional field to show the button next to and write the value to. Otherwise, the source field is used.
-     * @param callable-string|\Closure(string):string|GenericStringToStringCallback $callback The callback function. Processes the supplied input value.
      */
     public function __construct(
         protected string|\Closure|GenericToStringCallback $label,
         protected string|\Closure|GenericToStringCallback $icon,
         protected string|array|\Closure|GenericToArrayOfStringsCallback $table,
         protected string|array|\Closure|GenericToArrayOfStringsCallback $sourceField,
-        protected string|\Closure|GenericStringToStringCallback $callback,
+        protected string|array|\Closure|GenericStringToStringCallback $callback,
         protected string|array|\Closure|GenericStringToStringCallback|null $targetField = null,
     ) {}
 
     public function __invoke(string $value): string
     {
-        return ($this->initializeCallable($this->callback))($value);
+        $callbackChain = $this->callback;
+
+        if (!is_array($callbackChain)) {
+            $callbackChain = [$callbackChain];
+        }
+
+        foreach ($callbackChain as $callback) {
+            $value = ($this->initializeCallable($callback))($value);
+        }
+
+        return $value;
     }
 
     public function getIcon(): string
@@ -165,8 +175,8 @@ final class FieldButtonInstruction extends AbstractInstruction implements ExtLoc
             'linkAttributes' => [
                 'class' => 'highlevelFieldButton ',
                 'data-highlevel-identifier' => $this->getIdentifier(),
-                'data-formengine-input-name' => $data['elementBaseName'],
-                'data-formengine-output-name' => $data['elementBaseName'],
+                'data-highlevel-source-name' => '[' . $data['tableName'] . '][' . $data['vanillaUid'] . '][' . $this->getSourceFields()[0] . ']',
+                'data-highlevel-target-name' => $data['elementBaseName'],
             ],
             'javaScriptModules' => [JavaScriptModuleInstruction::create('@mabolek/highlevel/FieldButton.js')],
         ];
